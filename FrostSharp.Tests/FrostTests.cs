@@ -6,7 +6,6 @@ namespace FrostSharp.Tests
 {
     public class FrostTests
     {
-
         private string APIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGFsZWNjaGFuLmlvIiwiY2xpZW50X3Rva2VuIjoiNzU2MzcxYjYtZTQ1Zi1jMjA0LTE5NzQtZTI2MzhkMzU5NzQyIiwiaWF0IjoxNTE4MTM2OTM2LCJleHAiOjE1MjA5MDE3MzZ9.OrW6ehTROv1T6B1nzIdVrx1bt2j2Sw1WVz-L2FJxe7o";
 
         private Configuration GetConfiguration() 
