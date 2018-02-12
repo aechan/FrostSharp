@@ -1,37 +1,35 @@
 using System;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FrostSharp
 {
-    [DataContract]
     public class WorkAttributes 
     {
-        [DataMember]
+        [JsonProperty(PropertyName = "name")]
         public string Name { get; private set; }
 
-        [DataMember]
-        public DateTime DatePublished { get; private set; }
+        [JsonProperty(PropertyName = "datePublished")]
+        public string DatePublished { get; private set; }
 
-        [DataMember]
-        public DateTime DateCreated { get; private set; }
+        [JsonProperty(PropertyName = "dateCreated")]
+        public string DateCreated { get; private set; }
 
-        [DataMember]
+        [JsonProperty(PropertyName = "author")]
         public string Author { get; private set; }
 
-        [DataMember]
+        [JsonProperty(PropertyName = "tags")]
         public string Tags { get; private set; }
 
-        [DataMember]
+        [JsonProperty(PropertyName = "content")]
         public string Content { get; private set; }
 
         public WorkAttributes(string Name, DateTime DatePublished, DateTime DateCreated, string Author, string Tags, string Content) 
         {
             this.Name = Name;
-            this.DatePublished = DatePublished;
-            this.DateCreated = DateCreated;
+            this.DatePublished = DatePublished.ToString("yyyy-MM-ddTHH:mm:sszzz");
+            this.DateCreated = DateCreated.ToString("yyyy-MM-ddTHH:mm:sszzz");
             this.Author = Author;
             this.Tags = Tags;
             this.Content = Content;
@@ -39,24 +37,22 @@ namespace FrostSharp
 
         public WorkAttributes(string Name, DateTime DatePublished, DateTime DateCreated, string Author, string Content) : this(Name, DatePublished, DateCreated, Author, "", Content) { }
     
+        public WorkAttributes() : this("", DateTime.UtcNow, DateTime.UtcNow, "", "", "") { }
+
+
         public string ToJSON()
         {
-            MemoryStream ms = new MemoryStream();
-
-            var serializer = new DataContractJsonSerializer(typeof(WorkAttributes));
-            serializer.WriteObject(ms, this);
-            byte[] json = ms.ToArray();
-            ms.Close();
-            return Encoding.UTF8.GetString(json, 0, json.Length);
+            return JsonConvert.SerializeObject(this);
         }
 
         public static WorkAttributes FromJSON(string json)
         {
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(WorkAttributes));
-            WorkAttributes work = ser.ReadObject(ms) as WorkAttributes;
-            ms.Close();
-            return work;
+            return JsonConvert.DeserializeObject<WorkAttributes>(json);
+        }
+
+        public static List<WorkAttributes> ListFromJSON(string json)
+        {
+            return JsonConvert.DeserializeObject<List<WorkAttributes>>(json);
         }
     }
 }

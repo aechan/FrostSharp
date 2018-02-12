@@ -22,5 +22,7 @@ namespace FrostSharp
         public Configuration(string Host, int Timeout) : this(Host, "", "") { }
 
         public Configuration(string Host) : this(Host, 10) { }
+
+        public Configuration() : this("https://api.frost.po.et") { }
     }
 }
