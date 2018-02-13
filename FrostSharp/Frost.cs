@@ -35,16 +35,20 @@ namespace FrostSharp
         /// <returns>The ID of the created work.</returns>
         public async Task<string> CreateWork(WorkAttributes Work) 
         {
+            if(Work == null) throw new ArgumentNullException();
+            
             string targetURI = Config.Host + Path.WORKS;
             var res = await client.PostAsync(targetURI, new StringContent(Work.ToJSON(), System.Text.Encoding.UTF8, "application/json"));
+            var result = await res.Content.ReadAsStringAsync();
+
             if(res.IsSuccessStatusCode) 
             {
-                var result = await res.Content.ReadAsStringAsync();
-                return result;
+                var workIDType = new { workId = "" };
+                return Newtonsoft.Json.JsonConvert.DeserializeAnonymousType(result, workIDType).workId;
             }
             else
             {
-                throw new HttpRequestException("Bad Request");
+                throw new HttpRequestException("Bad Request: " + result);
             }
         }
 
@@ -57,16 +61,16 @@ namespace FrostSharp
         {
             string targetURI = Config.Host + Path.WORKS + "/" + WorkId;
             var res = await client.GetAsync(targetURI);
+            var result = await res.Content.ReadAsStringAsync();
 
             if(res.IsSuccessStatusCode)
             {
-                var result = await res.Content.ReadAsStringAsync();
                 WorkAttributes work = WorkAttributes.FromJSON(result);
                 return work;
             }
             else
             {
-                throw new HttpRequestException("Bad Request");
+                throw new HttpRequestException("Bad Request: " + result);
             }
         }
 
@@ -78,16 +82,16 @@ namespace FrostSharp
         {
             string targetURI = Config.Host + Path.WORKS;
             var res = await client.GetAsync(targetURI);
+            var result = await res.Content.ReadAsStringAsync();
 
             if(res.IsSuccessStatusCode)
             {
-                var result = await res.Content.ReadAsStringAsync();
                 List<WorkAttributes> works = WorkAttributes.ListFromJSON(result);
                 return works;
             }
             else
             {
-                throw new HttpRequestException("Bad Request");
+                throw new HttpRequestException("Bad Request: " + result);
             }
 
         }

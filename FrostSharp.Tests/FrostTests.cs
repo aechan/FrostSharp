@@ -7,7 +7,7 @@ namespace FrostSharp.Tests
     public class FrostTests
     {
         private string APIKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lQGFsZWNjaGFuLmlvIiwiY2xpZW50X3Rva2VuIjoiNzU2MzcxYjYtZTQ1Zi1jMjA0LTE5NzQtZTI2MzhkMzU5NzQyIiwiaWF0IjoxNTE4MTM2OTM2LCJleHAiOjE1MjA5MDE3MzZ9.OrW6ehTROv1T6B1nzIdVrx1bt2j2Sw1WVz-L2FJxe7o";
-        private const bool Logging = false;
+        private const bool Logging = true;
         private Configuration GetConfiguration() 
         {
             return new Configuration("https://api.frost.po.et");
@@ -27,7 +27,7 @@ namespace FrostSharp.Tests
         }
 
         [Fact]
-        public async void TestPostWork()
+        public async void TestCreateWorkReturnsValidWorkID()
         {
             Frost frost = new Frost(APIKey, GetConfiguration(), Logging);
 
@@ -44,16 +44,36 @@ namespace FrostSharp.Tests
 
             Assert.False(string.IsNullOrEmpty(workId));
             Assert.DoesNotContain(workId, " ");
+
+            var newWork = await frost.GetWork(workId);
+            
+            Assert.IsType(new WorkAttributes().GetType(), newWork);
+            Assert.Equal("Alec Chan", newWork.Author);
+
         }
 
         [Fact]
-        public async void TestGetAllWorks()
+        public async void TestGetAllWorksReturnsListOfWorks()
         {
             Frost frost = new Frost(APIKey, GetConfiguration(), Logging);
 
             var list = await frost.GetAllWorks();
 
             Assert.True(list.Count > 0);
+            Assert.IsType(new WorkAttributes().GetType(), list[0]);
+        }
+
+        [Fact]
+        public void TestCreateWorkNullException()
+        {
+            Frost frost = new Frost(APIKey, GetConfiguration(), Logging);
+            Assert.ThrowsAsync(new ArgumentNullException().GetType(), () => {return frost.CreateWork(null);});
+        }
+
+        [Fact]
+        public void TestCreateWorkThrowsBadRequestException()
+        {
+
         }
     }
 }
