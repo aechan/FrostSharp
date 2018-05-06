@@ -5,6 +5,8 @@
 
 ## .NET Core library wrapping po.et's Frost API.
 
+### Updated for Frost API v0.1
+
 ## Usage
 
 Install:
